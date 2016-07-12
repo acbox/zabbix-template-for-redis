@@ -138,18 +138,19 @@ def send(options):
 ## 'discover' COMMAND
 ###############################################################################
 
+def discoverRedisInstancePorts():
+    rc, output = execute("pgrep -al redis | sed 's/.*:\([0-9]*\)/\\1/g'")
+    if rc != 0:
+        return
+    return ','.join(map(lambda port: port.strip(), output.split("\n"))[:-1])
+
 def discover(options):
     # Initializations.
     discovery = {
         'data': [],
     }
-
     # Build Zabbix discovery input.
-    rc, output = execute("pgrep -al redis | sed 's/.*:\([0-9]*\)/\\1/g'")
-    if rc != 0:
-        sys.stdout.write(json.dumps(discovery, indent=2))
-    instances = map(lambda x: x.rstrip(), output.split("\n"))[:-1]
-    for instance in instances:
+    for instance in options.redis_instances.split(','):
         instance = instance.strip()
         if instance:
             if options.subject == 'items':
@@ -318,9 +319,11 @@ def main():
     parser = ArgumentParser()
     parser.add_argument(
         '-i', '--redis-instances', dest='redis_instances',
-        type=str, required=True,
+        type=str, required=False, default=None,
         help='comma-delimited list of Redis instances to get stats from '
-             '(port, host:port and unix:///path/to/socket formats are alowed')
+             '(port, host:port and unix:///path/to/socket formats are allowed). '
+             'If you do not specify this option Redis instances will be scraped '
+             'from the process table')
     parser.add_argument(
         '-t', '--redis-type', dest='redis_type',
         type=str, required=True, choices=SUBJECTS.keys(),
@@ -366,6 +369,10 @@ def main():
         if options.zabbix_config is None and options.zabbix_server is None:
             parser.print_help()
             sys.exit(1)
+
+    # Scan process table for Redis instances if none specified
+    if options.redis_instances is None:
+        options.redis_instances = discoverRedisInstancePorts()
 
     # Check subject to be discovered.
     if options.command == 'discover':

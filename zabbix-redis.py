@@ -145,6 +145,10 @@ def discover(options):
     }
 
     # Build Zabbix discovery input.
+    rc, output = execute("pgrep -al redis | sed 's/.*:\([0-9]*\)/\\1/g'")
+    if rc != 0:
+        sys.stdout.write(json.dumps(discovery, indent=2))
+    instances = map(lambda x: x.rstrip(), output.split("\n"))[:-1]
     for instance in options.redis_instances.split(','):
         instance = instance.strip()
         if instance:

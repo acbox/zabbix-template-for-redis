@@ -149,7 +149,7 @@ def discover(options):
     if rc != 0:
         sys.stdout.write(json.dumps(discovery, indent=2))
     instances = map(lambda x: x.rstrip(), output.split("\n"))[:-1]
-    for instance in options.redis_instances.split(','):
+    for instance in instances:
         instance = instance.strip()
         if instance:
             if options.subject == 'items':

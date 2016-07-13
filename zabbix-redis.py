@@ -13,6 +13,7 @@ import re
 import subprocess
 import sys
 import time
+import os.path
 from argparse import ArgumentParser
 
 ITEMS = {
@@ -187,13 +188,33 @@ def stats(location, type):
 
     # Parse location of the Redis instance.
     prefix = 'unix://'
+    instance_port = None
     if location.startswith(prefix):
+        if ":" in location[len(prefix):]:
+          instance_port = location.split(':')[-1]
+        else:
+          instance_port = '6379'
         opts = '-s "%s"' % location[len(prefix):]
     else:
         if ':' in location:
+            instance_port = location.split(':', 2)
             opts = '-h "%s" -p "%s"' % tuple(location.split(':', 1))
         else:
+            instance_port = location
             opts = '-p "%s"' % location
+
+    # Supply password if password file exists at ~/.zabbix_redis/${instance_port}
+    if instance_port is not None:
+      password_file = '%(home)s/.zabbix_redis/%(instance_port)s' % {
+        'home': os.environ['HOME'],
+        'instance_port': instance_port
+      }
+      if os.path.isfile(password_file):
+        password = open(password_file).read().split("\n")[0]
+        opts = "%(opts)s -a '%(password)s'" % {
+          'opts': opts,
+          'password': password
+        }
 
     # Fetch general stats through redis-cli.
     rc, output = execute('redis-cli %(opts)s INFO %(section)s' % {

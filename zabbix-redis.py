@@ -217,11 +217,17 @@ def stats(location, type):
         }
 
     # Fetch general stats through redis-cli.
-    rc, output = execute('redis-cli %(opts)s INFO %(section)s' % {
+    command = 'redis-cli %(opts)s INFO %(section)s' % {
         'opts': opts,
         'section': 'all' if type == 'server' else 'default',
-    })
-    if rc == 0:
+    }
+    rc, output = execute(command)
+    if rc != 0 or 'NOAUTH Authentication required.' in output:
+        sys.stdout.write("Error executing redis-cli for instance %(location)s:\n" % {
+          'location': location
+        })
+        sys.stdout.write(output)
+    else:
         section = None
         for line in output.splitlines():
             if line.startswith('#'):
@@ -262,8 +268,6 @@ def stats(location, type):
                         result[name] = value
                     if name == 'cluster:cluster_enabled' and value == '1':
                         clustered = True
-    else:
-        sys.stderr.write(output)
 
     # Fetch cluster stats through redis-cli.
     if type == 'server' and clustered:

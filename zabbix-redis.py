@@ -140,7 +140,7 @@ def send(options):
 ###############################################################################
 
 def discoverRedisInstancePorts():
-    rc, output = execute("pgrep -al redis | sed 's/.*:\([0-9]*\)/\\1/g'")
+    rc, output = execute("pgrep -al redis-server | grep ':' | sed 's/.*:\([0-9]*\)/\\1/g'")
     if rc != 0:
         return
     return ','.join(map(lambda port: port.strip(), output.split("\n"))[:-1])

@@ -29,7 +29,7 @@
                     <type>0</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>redis_server.discovery[{$REDIS_SERVER_LOCATIONS},commandstats]</key>
+                    <key>redis_server.discovery[commandstats]</key>
                     <delay>3600</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -218,7 +218,7 @@
                     <type>0</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>redis_server.discovery[{$REDIS_SERVER_LOCATIONS},items]</key>
+                    <key>redis_server.discovery[items]</key>
                     <delay>3600</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -2905,7 +2905,7 @@
                     <type>0</type>
                     <snmp_community/>
                     <snmp_oid/>
-                    <key>redis_server.discovery[{$REDIS_SERVER_LOCATIONS},keyspace]</key>
+                    <key>redis_server.discovery[keyspace]</key>
                     <delay>3600</delay>
                     <status>0</status>
                     <allowed_hosts/>
@@ -3145,12 +3145,7 @@
                     <host_prototypes/>
                 </discovery_rule>
             </discovery_rules>
-            <macros>
-                <macro>
-                    <macro>{$REDIS_SERVER_LOCATIONS}</macro>
-                    <value/>
-                </macro>
-            </macros>
+            <macros/>
             <templates/>
             <screens/>
         </template>

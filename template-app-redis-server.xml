@@ -2053,7 +2053,17 @@
                             <logtimefmt/>
                         </item_prototype>
                     </item_prototypes>
-                    <trigger_prototypes/>
+                    <trigger_prototypes>
+                        <trigger_prototype>
+                            <expression>{Template App Redis Server:redis_server.info[&quot;{#LOCATION_ID}&quot;,&quot;replication:role&quot;].change(0)}=1</expression>
+                            <name>Redis master/slave replication role has changed on {HOSTNAME}</name>
+                            <url/>
+                            <status>0</status>
+                            <priority>4</priority>
+                            <description/>
+                            <type>0</type>
+                        </trigger_prototype>
+                    </trigger_prototypes>
                     <graph_prototypes>
                         <graph_prototype>
                             <name>Redis Server[{#LOCATION}] &gt; Clients</name>
